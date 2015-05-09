@@ -1,11 +1,10 @@
 using System;
 using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace clowning.communicationsprotocol
+namespace clowning.communicationsprotocol.Models
 {
     public class TcpClientContext : IDisposable
     {
@@ -21,10 +20,9 @@ namespace clowning.communicationsprotocol
             _networkStream = tcpClient.GetStream();
         }
 
-        public async Task Send(string message, CancellationToken cancellationToken)
+        public async Task Send(byte[] message, CancellationToken cancellationToken)
         {
-            var buffer = Encoding.UTF8.GetBytes(message);
-            await _networkStream.WriteAsync(buffer, 0, buffer.Count(), cancellationToken).ConfigureAwait(false);
+            await _networkStream.WriteAsync(message, 0, message.Count(), cancellationToken).ConfigureAwait(false);
         }
 
         public void Dispose()

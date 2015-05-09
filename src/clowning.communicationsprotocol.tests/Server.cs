@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using clowning.communicationsprotocol.Models;
 using NUnit.Framework;
 
 namespace clowning.communicationsprotocol.tests
@@ -71,11 +72,13 @@ namespace clowning.communicationsprotocol.tests
             Assert.That(stopwatch.ElapsedMilliseconds, Is.GreaterThan(14500).And.LessThan(15500));
         }
 
-        private void ServerOnMessageReceivedEvent(object sender, string args)
+        private void ServerOnMessageReceivedEvent(object sender, byte[] args)
         {
             var context = sender as TcpClientContext;
             Assert.That(context, Is.Not.Null);
             if (context != null) Assert.That(context.Id, Is.EqualTo(1));
+            var message = Encoding.UTF8.GetString(args);
+            Assert.That(message, Is.EqualTo("Hello world!"));
         }
 
         private void ServerOnClientConnectedEvent(object sender, EventArgs args)
@@ -83,7 +86,8 @@ namespace clowning.communicationsprotocol.tests
             var tcpClientContext = sender as TcpClientContext;
             if (tcpClientContext != null)
             {
-                tcpClientContext.Send("MyEvent", new CancellationToken()).Wait();
+                var message = Encoding.UTF8.GetBytes("MyEvent");
+                tcpClientContext.Send(message, new CancellationToken()).Wait();
             }
         }
     }

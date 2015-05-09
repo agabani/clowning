@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using clowning.communicationsprotocol.Models;
 
 namespace clowning.communicationsprotocol
 {
@@ -21,7 +23,7 @@ namespace clowning.communicationsprotocol
 
         public delegate void OnDisconnectedEvent(object sender, EventArgs args);
 
-        public delegate void OnMessageReceivedEvent(object sender, string args);
+        public delegate void OnMessageReceivedEvent(object sender, byte[] args);
 
         public BlyncTcpServer(int port)
         {
@@ -84,8 +86,8 @@ namespace clowning.communicationsprotocol
                     while (!cancellationToken.IsCancellationRequested)
                     {
                         var timeoutTask = Task.Delay(TimeSpan.FromSeconds(15), cancellationToken);
-                        var amountReadTask = networkStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
-                        var completedTask = await Task.WhenAny(timeoutTask, amountReadTask).ConfigureAwait(false);
+                        var bytesTask = networkStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                        var completedTask = await Task.WhenAny(timeoutTask, bytesTask).ConfigureAwait(false);
 
                         if (completedTask == timeoutTask)
                         {
@@ -93,18 +95,16 @@ namespace clowning.communicationsprotocol
                             await networkStream.WriteAsync(message, 0, message.Length, cancellationToken);
                         }
 
-                        var amountRead = amountReadTask.Result;
-                        if (amountRead == 0)
+                        var bytes = bytesTask.Result;
+                        if (bytes == 0)
                         {
                             break;
                         }
 
                         if (MessageReceivedEvent != null)
                         {
-                            MessageReceivedEvent(clientContext, Encoding.UTF8.GetString(buffer, 0, amountRead));
+                            MessageReceivedEvent(clientContext, buffer.Take(bytes).ToArray());
                         }
-
-                        //await networkStream.WriteAsync(buffer, 0, amountRead, cancellationToken).ConfigureAwait(false);
                     }
                 }
             }
