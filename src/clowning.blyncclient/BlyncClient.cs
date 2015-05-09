@@ -106,50 +106,50 @@ namespace clowning.blyncclient
             return deviceTypes;
         }
 
-        public bool TurnOnLight(int deviceNumber, Color color)
+        public bool TurnOnLight(int deviceId, Color color)
         {
-            if (IsInvalidDeviceNumber(deviceNumber))
+            if (IsInvalidDeviceNumber(deviceId))
             {
-                throw new ArgumentOutOfRangeException("deviceNumber");
+                throw new ArgumentOutOfRangeException("deviceId");
             }
 
             switch (color)
             {
                 case Color.Red:
-                    return _blynclightController.TurnOnRedLight(deviceNumber);
+                    return _blynclightController.TurnOnRedLight(deviceId);
                 case Color.Green:
-                    return _blynclightController.TurnOnGreenLight(deviceNumber);
+                    return _blynclightController.TurnOnGreenLight(deviceId);
                 case Color.Blue:
-                    return _blynclightController.TurnOnBlueLight(deviceNumber);
+                    return _blynclightController.TurnOnBlueLight(deviceId);
                 case Color.Cyan:
-                    return _blynclightController.TurnOnCyanLight(deviceNumber);
+                    return _blynclightController.TurnOnCyanLight(deviceId);
                 case Color.Magenta:
-                    return _blynclightController.TurnOnMagentaLight(deviceNumber);
+                    return _blynclightController.TurnOnMagentaLight(deviceId);
                 case Color.Yellow:
-                    return _blynclightController.TurnOnYellowLight(deviceNumber);
+                    return _blynclightController.TurnOnYellowLight(deviceId);
                 case Color.White:
-                    return _blynclightController.TurnOnWhiteLight(deviceNumber);
+                    return _blynclightController.TurnOnWhiteLight(deviceId);
                 case Color.Orange:
-                    if (_deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30 &&
-                        _deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30S)
+                    if (_deviceTypes[deviceId] != DeviceTypes.BlyncUsb30 &&
+                        _deviceTypes[deviceId] != DeviceTypes.BlyncUsb30S)
                     {
                         throw new InvalidOperationException();
                     }
-                    return _blynclightController.TurnOnOrangeLight(deviceNumber);
+                    return _blynclightController.TurnOnOrangeLight(deviceId);
                 default:
                     throw new ArgumentOutOfRangeException("color");
             }
         }
 
-        public bool TurnOnLight(int deviceNumber, int red, int green, int blue)
+        public bool TurnOnLight(int deviceId, int red, int green, int blue)
         {
-            if (IsInvalidDeviceNumber(deviceNumber))
+            if (IsInvalidDeviceNumber(deviceId))
             {
-                throw new ArgumentOutOfRangeException("deviceNumber");
+                throw new ArgumentOutOfRangeException("deviceId");
             }
 
-            if (_deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30 &&
-                _deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30S)
+            if (_deviceTypes[deviceId] != DeviceTypes.BlyncUsb30 &&
+                _deviceTypes[deviceId] != DeviceTypes.BlyncUsb30S)
             {
                 throw new InvalidOperationException();
             }
@@ -169,64 +169,64 @@ namespace clowning.blyncclient
                 throw new ArgumentOutOfRangeException("blue");
             }
 
-            return _blynclightController.TurnOnRGBLights(deviceNumber, (byte) red, (byte) green, (byte) blue);
+            return _blynclightController.TurnOnRGBLights(deviceId, (byte) red, (byte) green, (byte) blue);
         }
 
-        public bool ResetLight(int deviceNumber)
+        public bool ResetLight(int deviceId)
         {
-            if (IsInvalidDeviceNumber(deviceNumber))
+            if (IsInvalidDeviceNumber(deviceId))
             {
-                throw new ArgumentOutOfRangeException("deviceNumber");
+                throw new ArgumentOutOfRangeException("deviceId");
             }
 
-            return _blynclightController.ResetLight(deviceNumber);
+            return _blynclightController.ResetLight(deviceId);
         }
 
-        public bool DimLight(int deviceNumber, bool enable)
+        public bool DimLight(int deviceId, bool enable)
         {
-            if (IsInvalidDeviceNumber(deviceNumber))
+            if (IsInvalidDeviceNumber(deviceId))
             {
-                throw new ArgumentOutOfRangeException("deviceNumber");
+                throw new ArgumentOutOfRangeException("deviceId");
             }
 
-            if (_deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30 &&
-                _deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30S)
+            if (_deviceTypes[deviceId] != DeviceTypes.BlyncUsb30 &&
+                _deviceTypes[deviceId] != DeviceTypes.BlyncUsb30S)
             {
                 throw new InvalidOperationException();
             }
 
             return enable
-                ? _blynclightController.SetLightDim(deviceNumber)
-                : _blynclightController.ClearLightDim(deviceNumber);
+                ? _blynclightController.SetLightDim(deviceId)
+                : _blynclightController.ClearLightDim(deviceId);
         }
 
-        public bool Flash(int deviceNumber, bool enable)
+        public bool Flash(int deviceId, bool enable)
         {
-            if (IsInvalidDeviceNumber(deviceNumber))
+            if (IsInvalidDeviceNumber(deviceId))
             {
-                throw new ArgumentOutOfRangeException("deviceNumber");
+                throw new ArgumentOutOfRangeException("deviceId");
             }
 
-            if (_deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30 &&
-                _deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30S)
+            if (_deviceTypes[deviceId] != DeviceTypes.BlyncUsb30 &&
+                _deviceTypes[deviceId] != DeviceTypes.BlyncUsb30S)
             {
                 throw new InvalidOperationException();
             }
 
             return enable
-                ? _blynclightController.StartLightFlash(deviceNumber)
-                : _blynclightController.StopLightFlash(deviceNumber);
+                ? _blynclightController.StartLightFlash(deviceId)
+                : _blynclightController.StopLightFlash(deviceId);
         }
 
-        public bool SetFlashSpeed(int deviceNumber, Speed speed)
+        public bool SetFlashSpeed(int deviceId, Speed speed)
         {
-            if (IsInvalidDeviceNumber(deviceNumber))
+            if (IsInvalidDeviceNumber(deviceId))
             {
-                throw new ArgumentOutOfRangeException("deviceNumber");
+                throw new ArgumentOutOfRangeException("deviceId");
             }
 
-            if (_deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30 &&
-                _deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30S)
+            if (_deviceTypes[deviceId] != DeviceTypes.BlyncUsb30 &&
+                _deviceTypes[deviceId] != DeviceTypes.BlyncUsb30S)
             {
                 throw new InvalidOperationException();
             }
@@ -236,34 +236,34 @@ namespace clowning.blyncclient
                 throw new ArgumentOutOfRangeException("speed");
             }
 
-            return _blynclightController.SelectLightFlashSpeed(deviceNumber, (byte) speed);
+            return _blynclightController.SelectLightFlashSpeed(deviceId, (byte) speed);
         }
 
-        public bool PlayMusic(int deviceNumber, bool enable)
+        public bool PlayMusic(int deviceId, bool enable)
         {
-            if (IsInvalidDeviceNumber(deviceNumber))
+            if (IsInvalidDeviceNumber(deviceId))
             {
-                throw new ArgumentOutOfRangeException("deviceNumber");
+                throw new ArgumentOutOfRangeException("deviceId");
             }
 
-            if (_deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30S)
+            if (_deviceTypes[deviceId] != DeviceTypes.BlyncUsb30S)
             {
                 throw new InvalidOperationException();
             }
 
             return enable
-                ? _blynclightController.StartMusicPlay(deviceNumber)
-                : _blynclightController.StopMusicPlay(deviceNumber);
+                ? _blynclightController.StartMusicPlay(deviceId)
+                : _blynclightController.StopMusicPlay(deviceId);
         }
 
-        public bool SelectMusic(int deviceNumber, int sound)
+        public bool SelectMusic(int deviceId, int sound)
         {
-            if (IsInvalidDeviceNumber(deviceNumber))
+            if (IsInvalidDeviceNumber(deviceId))
             {
-                throw new ArgumentOutOfRangeException("deviceNumber");
+                throw new ArgumentOutOfRangeException("deviceId");
             }
 
-            if (_deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30S)
+            if (_deviceTypes[deviceId] != DeviceTypes.BlyncUsb30S)
             {
                 throw new InvalidOperationException();
             }
@@ -273,34 +273,34 @@ namespace clowning.blyncclient
                 throw new ArgumentOutOfRangeException("sound");
             }
 
-            return _blynclightController.SelectMusicToPlay(deviceNumber, (byte) sound);
+            return _blynclightController.SelectMusicToPlay(deviceId, (byte) sound);
         }
 
-        public bool RepeatMusic(int deviceNumber, bool enable)
+        public bool RepeatMusic(int deviceId, bool enable)
         {
-            if (IsInvalidDeviceNumber(deviceNumber))
+            if (IsInvalidDeviceNumber(deviceId))
             {
-                throw new ArgumentOutOfRangeException("deviceNumber");
+                throw new ArgumentOutOfRangeException("deviceId");
             }
 
-            if (_deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30S)
+            if (_deviceTypes[deviceId] != DeviceTypes.BlyncUsb30S)
             {
                 throw new InvalidOperationException();
             }
 
             return enable
-                ? _blynclightController.SetMusicRepeat(deviceNumber)
-                : _blynclightController.ClearMusicRepeat(deviceNumber);
+                ? _blynclightController.SetMusicRepeat(deviceId)
+                : _blynclightController.ClearMusicRepeat(deviceId);
         }
 
-        public bool MusicVolume(int deviceNumber, int volumeLevel)
+        public bool MusicVolume(int deviceId, int volumeLevel)
         {
-            if (IsInvalidDeviceNumber(deviceNumber))
+            if (IsInvalidDeviceNumber(deviceId))
             {
-                throw new ArgumentOutOfRangeException("deviceNumber");
+                throw new ArgumentOutOfRangeException("deviceId");
             }
 
-            if (_deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30S)
+            if (_deviceTypes[deviceId] != DeviceTypes.BlyncUsb30S)
             {
                 throw new InvalidOperationException();
             }
@@ -310,24 +310,24 @@ namespace clowning.blyncclient
                 throw new ArgumentOutOfRangeException("volumeLevel");
             }
 
-            return _blynclightController.SetMusicVolume(deviceNumber, (byte) volumeLevel);
+            return _blynclightController.SetMusicVolume(deviceId, (byte) volumeLevel);
         }
 
-        public bool MuteVolume(int deviceNumber, bool enable)
+        public bool MuteVolume(int deviceId, bool enable)
         {
-            if (IsInvalidDeviceNumber(deviceNumber))
+            if (IsInvalidDeviceNumber(deviceId))
             {
-                throw new ArgumentOutOfRangeException("deviceNumber");
+                throw new ArgumentOutOfRangeException("deviceId");
             }
 
-            if (_deviceTypes[deviceNumber] != DeviceTypes.BlyncUsb30S)
+            if (_deviceTypes[deviceId] != DeviceTypes.BlyncUsb30S)
             {
                 throw new InvalidOperationException();
             }
 
             return enable
-                ? _blynclightController.SetVolumeMute(deviceNumber)
-                : _blynclightController.ClearVolumeMute(deviceNumber);
+                ? _blynclightController.SetVolumeMute(deviceId)
+                : _blynclightController.ClearVolumeMute(deviceId);
         }
 
         private static bool IsInvalidSpeed(Speed speed)
@@ -336,9 +336,9 @@ namespace clowning.blyncclient
             return !values.Contains(speed);
         }
 
-        private bool IsInvalidDeviceNumber(int deviceNumber)
+        private bool IsInvalidDeviceNumber(int deviceId)
         {
-            return deviceNumber >= NumberOfDevices || deviceNumber < 0;
+            return deviceId >= NumberOfDevices || deviceId < 0;
         }
 
         private static bool IsInvalidColorIntensity(int intensity)
