@@ -15,7 +15,7 @@ namespace clowning.communicationsprotocol.tests
         [Test]
         public void Should_be_able_to_start_server()
         {
-            var server = new BlyncTcpServer(8000);
+            var server = new BlyncTcpServer(new TcpServerSettings{Port = 8000});
             server.Start();
             server.Stop();
         }
@@ -23,7 +23,7 @@ namespace clowning.communicationsprotocol.tests
         [Test]
         public void Should_be_able_to_send_message_from_server()
         {
-            var server = new BlyncTcpServer(8000);
+            var server = new BlyncTcpServer(new TcpServerSettings { Port = 8000 });
             server.ClientConnectedEvent += ServerOnClientConnectedEvent;
             server.Start();
             var client = new TcpClient("127.0.0.1", 8000);
@@ -39,7 +39,7 @@ namespace clowning.communicationsprotocol.tests
         public void Should_be_notified_when_client_sends_a_message()
         {
             var called = false;
-            var server = new BlyncTcpServer(8000);
+            var server = new BlyncTcpServer(new TcpServerSettings { Port = 8000 });
             server.MessageReceivedEvent += ServerOnMessageReceivedEvent;
             server.MessageReceivedEvent += (o, e) => called = true;
             server.Start();
@@ -56,12 +56,12 @@ namespace clowning.communicationsprotocol.tests
         }
 
         [Test]
-        public void Should_send_timeout_if_client_is_inactive_for_15_seconds()
+        public void Should_send_timeout_if_client_is_inactive_for_50_millisseconds()
         {
             var stopwatch = new Stopwatch();
-            var server = new BlyncTcpServer(8000);
+            var server = new BlyncTcpServer(new TcpServerSettings { Port = 7999, ConnectionTimeoutPeriod = 50 });
             server.Start();
-            var client = new TcpClient("127.0.0.1", 8000);
+            var client = new TcpClient("127.0.0.1", 7999);
             var stream = client.GetStream();
             var buffer = new byte[4096];
             stopwatch.Start();
@@ -69,7 +69,7 @@ namespace clowning.communicationsprotocol.tests
             stopwatch.Stop();
             var response = Encoding.UTF8.GetString(buffer, 0, bytes);
             Assert.That(response, Is.EqualTo("Client timed out"));
-            Assert.That(stopwatch.ElapsedMilliseconds, Is.GreaterThan(14500).And.LessThan(15500));
+            Assert.That(stopwatch.ElapsedMilliseconds, Is.GreaterThanOrEqualTo(50).And.LessThan(70));
         }
 
         private void ServerOnMessageReceivedEvent(object sender, byte[] args)

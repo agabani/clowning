@@ -14,6 +14,7 @@ namespace clowning.communicationsprotocol
     {
         private readonly TcpListener _tcpListener;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private int _connectionTimeoutPeriod;
 
         public event OnConnectedEvent ClientConnectedEvent;
         public event OnDisconnectedEvent ClientDisconnectedEvent;
@@ -25,9 +26,12 @@ namespace clowning.communicationsprotocol
 
         public delegate void OnMessageReceivedEvent(object sender, byte[] args);
 
-        public BlyncTcpServer(int port)
+        public BlyncTcpServer(TcpServerSettings tcpServerSettings)
         {
-            _tcpListener = new TcpListener(IPAddress.Any, port);
+            _tcpListener = new TcpListener(IPAddress.Any, tcpServerSettings.Port);
+            _connectionTimeoutPeriod = tcpServerSettings.ConnectionTimeoutPeriod > 0
+                ? tcpServerSettings.ConnectionTimeoutPeriod
+                : 15000;
         }
 
         public void Dispose()
@@ -42,7 +46,7 @@ namespace clowning.communicationsprotocol
         {
             _tcpListener.Start();
             AcceptClientsAsync(_tcpListener, _cancellationTokenSource.Token);
-            Trace.TraceInformation("Listening started");
+            Trace.TraceInformation("Listening started on {0}", _tcpListener.LocalEndpoint);
             return true;
         }
 
@@ -75,7 +79,7 @@ namespace clowning.communicationsprotocol
                 ClientConnectedEvent(clientContext, EventArgs.Empty);
             }
 
-            Trace.TraceInformation("New tcpClient ({0}) connected", clientIndex);
+            Trace.TraceInformation("New client ({0}) connected", clientIndex);
 
             using (tcpClient)
             {
@@ -85,7 +89,8 @@ namespace clowning.communicationsprotocol
 
                     while (!cancellationToken.IsCancellationRequested)
                     {
-                        var timeoutTask = Task.Delay(TimeSpan.FromSeconds(15), cancellationToken);
+                        var timeoutTask = Task.Delay(TimeSpan.FromMilliseconds(_connectionTimeoutPeriod),
+                            cancellationToken);
                         var bytesTask = networkStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
                         var completedTask = await Task.WhenAny(timeoutTask, bytesTask).ConfigureAwait(false);
 

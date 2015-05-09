@@ -1,11 +1,17 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace clowning.communicationsprotocol.jsonprotocol
+namespace clowning.communicationsprotocol.JsonProtocolPacket
 {
     [JsonObject]
-    public class BlyncJsonInstruction
+    public class JsonInstructionPacket
     {
+        [JsonProperty(PropertyName = "deviceId", NullValueHandling = NullValueHandling.Ignore)]
+        public int? DeviceId { get; set; }
+
+        [JsonProperty(PropertyName = "deviceIds", NullValueHandling = NullValueHandling.Ignore)]
+        public ICollection<int> DeviceIds { get; set; }
+
         [JsonProperty(PropertyName = "flash", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Flash { get; set; }
 
