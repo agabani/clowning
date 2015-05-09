@@ -5,11 +5,11 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "clowning.blyncclient", "src\clowning.blyncclient\clowning.blyncclient.csproj", "{C2DBBA8E-CE11-4D5B-B790-399327C5213C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{CF81C62A-C64E-43BD-9902-15544330B3EE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A6056255-447F-4A9A-BDF1-06EA1275FCFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "clowning.blyncclient.tests", "src\clowning.blyncclient.tests\clowning.blyncclient.tests.csproj", "{8AE4C165-D9BF-4366-98E4-7F692CDDC58A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "clowning.standaloneconsole", "src\clowning.standaloneconsole\clowning.standaloneconsole.csproj", "{90223AA3-5691-48FB-92C2-4022938C28D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,12 +25,15 @@ Global
 		{8AE4C165-D9BF-4366-98E4-7F692CDDC58A}.Debug|x86.Build.0 = Debug|x86
 		{8AE4C165-D9BF-4366-98E4-7F692CDDC58A}.Release|x86.ActiveCfg = Release|x86
 		{8AE4C165-D9BF-4366-98E4-7F692CDDC58A}.Release|x86.Build.0 = Release|x86
+		{90223AA3-5691-48FB-92C2-4022938C28D8}.Debug|x86.ActiveCfg = Debug|x86
+		{90223AA3-5691-48FB-92C2-4022938C28D8}.Debug|x86.Build.0 = Debug|x86
+		{90223AA3-5691-48FB-92C2-4022938C28D8}.Release|x86.ActiveCfg = Release|x86
+		{90223AA3-5691-48FB-92C2-4022938C28D8}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{C2DBBA8E-CE11-4D5B-B790-399327C5213C} = {CF81C62A-C64E-43BD-9902-15544330B3EE}
 		{8AE4C165-D9BF-4366-98E4-7F692CDDC58A} = {A6056255-447F-4A9A-BDF1-06EA1275FCFE}
 	EndGlobalSection
 EndGlobal

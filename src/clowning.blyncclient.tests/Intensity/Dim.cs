@@ -37,13 +37,13 @@ namespace clowning.blyncclient.tests.Intensity
 
             for (var device = 0; device < _blyncClient.NumberOfDevices; device++)
             {
-                _successful &= _blyncClient.DimLight(device, true);
+                _successful &= _blyncClient.SetDim(device, true);
             }
         }
 
         private TestDelegate When_I_dim(int deviceNumber)
         {
-            return () => _blyncClient.DimLight(deviceNumber, true);
+            return () => _blyncClient.SetDim(deviceNumber, true);
         }
 
         private void Then_the_device_should_be_dim()

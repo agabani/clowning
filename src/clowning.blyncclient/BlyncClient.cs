@@ -106,7 +106,7 @@ namespace clowning.blyncclient
             return deviceTypes;
         }
 
-        public bool TurnOnLight(int deviceId, Color color)
+        public bool SetColor(int deviceId, Color color)
         {
             if (IsInvalidDeviceNumber(deviceId))
             {
@@ -141,7 +141,7 @@ namespace clowning.blyncclient
             }
         }
 
-        public bool TurnOnLight(int deviceId, int red, int green, int blue)
+        public bool SetColor(int deviceId, int red, int green, int blue)
         {
             if (IsInvalidDeviceNumber(deviceId))
             {
@@ -182,7 +182,7 @@ namespace clowning.blyncclient
             return _blynclightController.ResetLight(deviceId);
         }
 
-        public bool DimLight(int deviceId, bool enable)
+        public bool SetDim(int deviceId, bool enable)
         {
             if (IsInvalidDeviceNumber(deviceId))
             {
@@ -200,7 +200,7 @@ namespace clowning.blyncclient
                 : _blynclightController.ClearLightDim(deviceId);
         }
 
-        public bool Flash(int deviceId, bool enable)
+        public bool SetFlash(int deviceId, bool enable)
         {
             if (IsInvalidDeviceNumber(deviceId))
             {
