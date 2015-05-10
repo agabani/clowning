@@ -6,11 +6,19 @@ namespace clowning.communicationsprotocol
 {
     public class JsonPacketStream
     {
-        private readonly byte[] _streamBuffer = new byte[4096];
-        private MemoryStream _memoryStream;
+        private const int HeaderLength = 5;
+        private readonly byte[] _streamBuffer;
+        private readonly MemoryStream _memoryStream;
 
         public JsonPacketStream()
         {
+            _streamBuffer = new byte[4096];
+            _memoryStream = new MemoryStream(_streamBuffer);
+        }
+
+        public JsonPacketStream(int bufferSize)
+        {
+            _streamBuffer = new byte[bufferSize];
             _memoryStream = new MemoryStream(_streamBuffer);
         }
 
@@ -25,10 +33,10 @@ namespace clowning.communicationsprotocol
             {
                 finished = true;
 
-                if (_memoryStream.Position >= 5)
+                if (_memoryStream.Position >= HeaderLength)
                 {
                     var contentLength = BitConverter.ToInt32(_streamBuffer, 1);
-                    var packetLength = 5 + contentLength;
+                    var packetLength = HeaderLength + contentLength;
 
                     if (_memoryStream.Position >= packetLength)
                     {
@@ -38,12 +46,7 @@ namespace clowning.communicationsprotocol
                         _memoryStream.Position = 0;
                         _memoryStream.Read(buffer, 0, packetLength);
 
-                        for (var i = 0; i < streamLength - packetLength; i++)
-                        {
-                            _streamBuffer[i] = _streamBuffer[i + packetLength];
-                        }
-
-                        _memoryStream.Position = streamLength - packetLength;
+                        LeftShiftStream(streamLength, packetLength);
 
                         if (result == null)
                         {
@@ -52,12 +55,21 @@ namespace clowning.communicationsprotocol
 
                         result.Add(buffer);
                         finished = false;
-
                     }
                 }
             } while (finished == false);
 
             return result;
+        }
+
+        private void LeftShiftStream(long streamLength, long packetLength)
+        {
+            for (var i = 0; i < streamLength - packetLength; i++)
+            {
+                _streamBuffer[i] = _streamBuffer[i + packetLength];
+            }
+
+            _memoryStream.Position = streamLength - packetLength;
         }
     }
 }

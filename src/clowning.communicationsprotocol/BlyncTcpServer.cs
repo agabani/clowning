@@ -74,6 +74,8 @@ namespace clowning.communicationsprotocol
         {
             var clientContext = new TcpClientContext(clientIndex, tcpClient);
 
+            var jsonPacketStream = new JsonPacketStream();
+
             if (ClientConnectedEvent != null)
             {
                 ClientConnectedEvent(clientContext, EventArgs.Empty);
@@ -106,9 +108,21 @@ namespace clowning.communicationsprotocol
                             break;
                         }
 
-                        if (MessageReceivedEvent != null)
+                        if (MessageReceivedEvent == null)
                         {
-                            MessageReceivedEvent(clientContext, buffer.Take(bytes).ToArray());
+                            continue;
+                        }
+
+                        var results = jsonPacketStream.FeedBytes(buffer.Take(bytes).ToArray());
+
+                        if (results == null)
+                        {
+                            continue;
+                        }
+
+                        foreach (var result in results)
+                        {
+                            MessageReceivedEvent(clientContext, result);
                         }
                     }
                 }

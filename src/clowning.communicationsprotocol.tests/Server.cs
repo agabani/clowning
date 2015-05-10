@@ -38,6 +38,7 @@ namespace clowning.communicationsprotocol.tests
         [Test]
         public void Should_be_notified_when_client_sends_a_message()
         {
+            var jsonProtocol = new JsonProtocol();
             var called = false;
             var server = new BlyncTcpServer(new TcpServerSettings { Port = 8000 });
             server.MessageReceivedEvent += ServerOnMessageReceivedEvent;
@@ -45,7 +46,7 @@ namespace clowning.communicationsprotocol.tests
             server.Start();
             var tcpClient = new TcpClient("127.0.0.1", 8000);
             var stream = tcpClient.GetStream();
-            var message = Encoding.UTF8.GetBytes("Hello world!");
+            var message = jsonProtocol.SetPacketContents(0, "Hello world!");
             stream.Write(message, 0, message.Length);
             var timeoutTask = Task.Delay(TimeSpan.FromSeconds(1));
             while (!timeoutTask.IsCompleted && called == false)
@@ -77,7 +78,9 @@ namespace clowning.communicationsprotocol.tests
             var context = sender as TcpClientContext;
             Assert.That(context, Is.Not.Null);
             if (context != null) Assert.That(context.Id, Is.EqualTo(1));
-            var message = Encoding.UTF8.GetString(args);
+            var jsonProtocol = new JsonProtocol();
+            var contentLength = jsonProtocol.GetPacketLength(args);
+            var message = jsonProtocol.GetPacketContents(args, contentLength);
             Assert.That(message, Is.EqualTo("Hello world!"));
         }
 
