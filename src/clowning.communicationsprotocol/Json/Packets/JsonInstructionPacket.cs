@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace clowning.communicationsprotocol.JsonProtocolPacket
+namespace clowning.communicationsprotocol.Json.Packets
 {
     [JsonObject]
     public class JsonInstructionPacket

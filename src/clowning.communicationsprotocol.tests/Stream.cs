@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using clowning.communicationsprotocol.Json;
+using clowning.communicationsprotocol.Json.Stream;
+using clowning.communicationsprotocol.Stream;
 using NUnit.Framework;
 
 namespace clowning.communicationsprotocol.tests
@@ -32,7 +35,7 @@ namespace clowning.communicationsprotocol.tests
             for (int i = 0; i < message.Length; i += count)
             {
                 var array = message.Skip(i).Take(count).ToArray();
-                var result = jsonPacketStream.FeedBytes(array);
+                var result = jsonPacketStream.ParseBytes(array);
 
                 if (result != null)
                 {

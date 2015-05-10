@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using clowning.communicationsprotocol.Stream;
 
-namespace clowning.communicationsprotocol
+namespace clowning.communicationsprotocol.Json.Stream
 {
-    public class JsonPacketStream
+    public class JsonPacketStream : IPacketStream
     {
         private const int HeaderLength = 5;
         private readonly byte[] _streamBuffer;
@@ -22,7 +23,7 @@ namespace clowning.communicationsprotocol
             _memoryStream = new MemoryStream(_streamBuffer);
         }
 
-        public ICollection<byte[]> FeedBytes(byte[] feed)
+        public ICollection<byte[]> ParseBytes(byte[] feed)
         {
             List<byte[]> result = null;
 
@@ -70,6 +71,14 @@ namespace clowning.communicationsprotocol
             }
 
             _memoryStream.Position = streamLength - packetLength;
+        }
+
+        public void Dispose()
+        {
+            if (_memoryStream != null)
+            {
+                _memoryStream.Dispose();
+            }
         }
     }
 }

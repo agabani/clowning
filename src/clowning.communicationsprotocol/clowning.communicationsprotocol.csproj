@@ -47,11 +47,14 @@
   <ItemGroup>
     <Compile Include="BlyncTcpClient.cs" />
     <Compile Include="BlyncTcpServer.cs" />
-    <Compile Include="JsonPacketStream.cs" />
-    <Compile Include="JsonProtocol.cs" />
-    <Compile Include="JsonProtocolPacket\JsonInstructionPacket.cs" />
-    <Compile Include="JsonProtocolPacket\JsonProtocolPacketTypes.cs" />
-    <Compile Include="JsonProtocolPacket\JsonIdentityPacket.cs" />
+    <Compile Include="Stream\IPacketStreamFactory.cs" />
+    <Compile Include="Stream\IPacketStream.cs" />
+    <Compile Include="Json\Stream\JsonPacketStream.cs" />
+    <Compile Include="Json\Stream\JsonPacketStreamFactory.cs" />
+    <Compile Include="Json\JsonProtocol.cs" />
+    <Compile Include="Json\Packets\JsonInstructionPacket.cs" />
+    <Compile Include="Json\JsonProtocolPacketTypes.cs" />
+    <Compile Include="Json\Packets\JsonIdentityPacket.cs" />
     <Compile Include="Models\TcpServerSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\TcpClientContext.cs" />

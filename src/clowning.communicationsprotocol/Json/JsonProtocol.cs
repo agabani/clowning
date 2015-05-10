@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace clowning.communicationsprotocol
+namespace clowning.communicationsprotocol.Json
 {
     public class JsonProtocol
     {

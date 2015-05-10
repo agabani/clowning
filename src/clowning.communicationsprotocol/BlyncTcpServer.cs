@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using clowning.communicationsprotocol.Models;
+using clowning.communicationsprotocol.Stream;
 
 namespace clowning.communicationsprotocol
 {
@@ -15,6 +16,7 @@ namespace clowning.communicationsprotocol
         private readonly TcpListener _tcpListener;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly int _connectionTimeoutPeriod;
+        private readonly IPacketStreamFactory _jsonPacketStreamFactory;
 
         public event OnConnectedEvent ClientConnectedEvent;
         public event OnDisconnectedEvent ClientDisconnectedEvent;
@@ -32,6 +34,7 @@ namespace clowning.communicationsprotocol
             _connectionTimeoutPeriod = tcpServerSettings.ConnectionTimeoutPeriod > 0
                 ? tcpServerSettings.ConnectionTimeoutPeriod
                 : 15000;
+            _jsonPacketStreamFactory = tcpServerSettings.PacketStreamFactory;
         }
 
         public void Dispose()
@@ -74,8 +77,6 @@ namespace clowning.communicationsprotocol
         {
             var clientContext = new TcpClientContext(clientIndex, tcpClient);
 
-            var jsonPacketStream = new JsonPacketStream();
-
             if (ClientConnectedEvent != null)
             {
                 ClientConnectedEvent(clientContext, EventArgs.Empty);
@@ -84,46 +85,45 @@ namespace clowning.communicationsprotocol
             Trace.TraceInformation("New client ({0}) connected", clientIndex);
 
             using (tcpClient)
+            using (var networkStream = tcpClient.GetStream())
+            using (var packetStream = _jsonPacketStreamFactory.New())
             {
-                using (var networkStream = tcpClient.GetStream())
+                var buffer = new byte[4096];
+
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    var buffer = new byte[4096];
+                    var timeoutTask = Task.Delay(TimeSpan.FromMilliseconds(_connectionTimeoutPeriod),
+                        cancellationToken);
+                    var bytesTask = networkStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                    var completedTask = await Task.WhenAny(timeoutTask, bytesTask).ConfigureAwait(false);
 
-                    while (!cancellationToken.IsCancellationRequested)
+                    if (completedTask == timeoutTask)
                     {
-                        var timeoutTask = Task.Delay(TimeSpan.FromMilliseconds(_connectionTimeoutPeriod),
-                            cancellationToken);
-                        var bytesTask = networkStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
-                        var completedTask = await Task.WhenAny(timeoutTask, bytesTask).ConfigureAwait(false);
+                        var message = Encoding.UTF8.GetBytes("Client timed out");
+                        await networkStream.WriteAsync(message, 0, message.Length, cancellationToken);
+                    }
 
-                        if (completedTask == timeoutTask)
-                        {
-                            var message = Encoding.UTF8.GetBytes("Client timed out");
-                            await networkStream.WriteAsync(message, 0, message.Length, cancellationToken);
-                        }
+                    var bytes = bytesTask.Result;
+                    if (bytes == 0)
+                    {
+                        break;
+                    }
 
-                        var bytes = bytesTask.Result;
-                        if (bytes == 0)
-                        {
-                            break;
-                        }
+                    if (MessageReceivedEvent == null)
+                    {
+                        continue;
+                    }
 
-                        if (MessageReceivedEvent == null)
-                        {
-                            continue;
-                        }
+                    var results = packetStream.ParseBytes(buffer.Take(bytes).ToArray());
 
-                        var results = jsonPacketStream.FeedBytes(buffer.Take(bytes).ToArray());
+                    if (results == null)
+                    {
+                        continue;
+                    }
 
-                        if (results == null)
-                        {
-                            continue;
-                        }
-
-                        foreach (var result in results)
-                        {
-                            MessageReceivedEvent(clientContext, result);
-                        }
+                    foreach (var result in results)
+                    {
+                        MessageReceivedEvent(clientContext, result);
                     }
                 }
             }

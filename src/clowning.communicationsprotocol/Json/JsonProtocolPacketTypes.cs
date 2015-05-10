@@ -1,4 +1,4 @@
-﻿namespace clowning.communicationsprotocol.JsonProtocolPacket
+﻿namespace clowning.communicationsprotocol.Json
 {
     public enum JsonProtocolPacketTypes
     {

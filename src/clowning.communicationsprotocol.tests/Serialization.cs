@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using clowning.communicationsprotocol.Json;
+using NUnit.Framework;
 
 namespace clowning.communicationsprotocol.tests
 {

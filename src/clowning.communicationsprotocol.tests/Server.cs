@@ -4,7 +4,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using clowning.communicationsprotocol.Json;
+using clowning.communicationsprotocol.Json.Stream;
 using clowning.communicationsprotocol.Models;
+using clowning.communicationsprotocol.Stream;
 using NUnit.Framework;
 
 namespace clowning.communicationsprotocol.tests
@@ -15,7 +18,7 @@ namespace clowning.communicationsprotocol.tests
         [Test]
         public void Should_be_able_to_start_server()
         {
-            var server = new BlyncTcpServer(new TcpServerSettings{Port = 8000});
+            var server = new BlyncTcpServer(new TcpServerSettings {Port = 8000});
             server.Start();
             server.Stop();
         }
@@ -23,7 +26,7 @@ namespace clowning.communicationsprotocol.tests
         [Test]
         public void Should_be_able_to_send_message_from_server()
         {
-            var server = new BlyncTcpServer(new TcpServerSettings { Port = 8000 });
+            var server = new BlyncTcpServer(new TcpServerSettings {Port = 8000});
             server.ClientConnectedEvent += ServerOnClientConnectedEvent;
             server.Start();
             var client = new TcpClient("127.0.0.1", 8000);
@@ -40,7 +43,12 @@ namespace clowning.communicationsprotocol.tests
         {
             var jsonProtocol = new JsonProtocol();
             var called = false;
-            var server = new BlyncTcpServer(new TcpServerSettings { Port = 8000 });
+            var server =
+                new BlyncTcpServer(new TcpServerSettings
+                {
+                    Port = 8000,
+                    PacketStreamFactory = new JsonPacketStreamFactory()
+                });
             server.MessageReceivedEvent += ServerOnMessageReceivedEvent;
             server.MessageReceivedEvent += (o, e) => called = true;
             server.Start();
@@ -60,7 +68,13 @@ namespace clowning.communicationsprotocol.tests
         public void Should_send_timeout_if_client_is_inactive_for_50_millisseconds()
         {
             var stopwatch = new Stopwatch();
-            var server = new BlyncTcpServer(new TcpServerSettings { Port = 7999, ConnectionTimeoutPeriod = 50 });
+            var server =
+                new BlyncTcpServer(new TcpServerSettings
+                {
+                    Port = 7999,
+                    ConnectionTimeoutPeriod = 50,
+                    PacketStreamFactory = new JsonPacketStreamFactory()
+                });
             server.Start();
             var client = new TcpClient("127.0.0.1", 7999);
             var stream = client.GetStream();
