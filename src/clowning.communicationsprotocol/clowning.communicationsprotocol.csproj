@@ -47,6 +47,8 @@
   <ItemGroup>
     <Compile Include="BlyncTcpClient.cs" />
     <Compile Include="BlyncTcpServer.cs" />
+    <Compile Include="JsonPacketStream.cs" />
+    <Compile Include="JsonProtocol.cs" />
     <Compile Include="JsonProtocolPacket\JsonInstructionPacket.cs" />
     <Compile Include="JsonProtocolPacket\JsonProtocolPacketTypes.cs" />
     <Compile Include="JsonProtocolPacket\JsonIdentityPacket.cs" />

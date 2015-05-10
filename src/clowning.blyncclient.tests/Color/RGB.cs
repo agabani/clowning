@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using NUnit.Framework;
 
 namespace clowning.blyncclient.tests.Color

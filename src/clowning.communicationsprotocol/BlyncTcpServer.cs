@@ -14,7 +14,7 @@ namespace clowning.communicationsprotocol
     {
         private readonly TcpListener _tcpListener;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-        private int _connectionTimeoutPeriod;
+        private readonly int _connectionTimeoutPeriod;
 
         public event OnConnectedEvent ClientConnectedEvent;
         public event OnDisconnectedEvent ClientDisconnectedEvent;
