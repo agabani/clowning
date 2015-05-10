@@ -58,6 +58,7 @@
     <Compile Include="Models\TcpServerSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\TcpClientContext.cs" />
+    <Compile Include="Models\TcpClientSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

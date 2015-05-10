@@ -16,7 +16,7 @@ namespace clowning.communicationsprotocol
         private readonly TcpListener _tcpListener;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly int _connectionTimeoutPeriod;
-        private readonly IPacketStreamFactory _jsonPacketStreamFactory;
+        private readonly IPacketStreamFactory _packetStreamFactory;
 
         public event OnConnectedEvent ClientConnectedEvent;
         public event OnDisconnectedEvent ClientDisconnectedEvent;
@@ -34,7 +34,7 @@ namespace clowning.communicationsprotocol
             _connectionTimeoutPeriod = tcpServerSettings.ConnectionTimeoutPeriod > 0
                 ? tcpServerSettings.ConnectionTimeoutPeriod
                 : 15000;
-            _jsonPacketStreamFactory = tcpServerSettings.PacketStreamFactory;
+            _packetStreamFactory = tcpServerSettings.PacketStreamFactory;
         }
 
         public void Dispose()
@@ -47,17 +47,19 @@ namespace clowning.communicationsprotocol
 
         public bool Start()
         {
+            Trace.TraceInformation("[Server] Starting listen");
             _tcpListener.Start();
             AcceptClientsAsync(_tcpListener, _cancellationTokenSource.Token);
-            Trace.TraceInformation("Listening started on {0}", _tcpListener.LocalEndpoint);
+            Trace.TraceInformation("[Server] Started listen on {0}", _tcpListener.LocalEndpoint);
             return true;
         }
 
         public void Stop()
         {
+            Trace.TraceInformation("[Server] Stopping listen");
             _cancellationTokenSource.Cancel();
             _tcpListener.Stop();
-            Trace.TraceInformation("Listening stopped");
+            Trace.TraceInformation("[Server] Stopped listen");
         }
 
         private async void AcceptClientsAsync(TcpListener tcpListener, CancellationToken cancellationToken)
@@ -68,7 +70,6 @@ namespace clowning.communicationsprotocol
             {
                 var tcpClient = await tcpListener.AcceptTcpClientAsync().ConfigureAwait(false);
                 clientCounter++;
-
                 ProcessClientAsync(tcpClient, clientCounter, cancellationToken);
             }
         }
@@ -82,11 +83,11 @@ namespace clowning.communicationsprotocol
                 ClientConnectedEvent(clientContext, EventArgs.Empty);
             }
 
-            Trace.TraceInformation("New client ({0}) connected", clientIndex);
+            Trace.TraceInformation("[Server] New client ({0}) connected", clientIndex);
 
             using (tcpClient)
             using (var networkStream = tcpClient.GetStream())
-            using (var packetStream = _jsonPacketStreamFactory.New())
+            using (var packetStream = _packetStreamFactory.New())
             {
                 var buffer = new byte[4096];
 
@@ -133,7 +134,7 @@ namespace clowning.communicationsprotocol
                 ClientDisconnectedEvent(clientContext, EventArgs.Empty);
             }
 
-            Trace.TraceInformation("Client ({0}) disconnected", clientIndex);
+            Trace.TraceInformation("[Server] Client ({0}) disconnected", clientIndex);
         }
     }
 }
