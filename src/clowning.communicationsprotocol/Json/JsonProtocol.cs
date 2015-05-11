@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace clowning.communicationsprotocol.Json
 {
@@ -35,6 +36,22 @@ namespace clowning.communicationsprotocol.Json
                 memoryStream.Write(Encoding.UTF8.GetBytes(content), 0, content.Length);
                 return memoryStream.ToArray();
             }
+        }
+
+        /// <summary>
+        /// Marked for deletion
+        /// </summary>
+        public string Serialize<T>(T content)
+        {
+            return JsonConvert.SerializeObject(content);
+        }
+
+        /// <summary>
+        /// Marked for deletion
+        /// </summary>
+        public T Deserialize<T>(string content)
+        {
+            return JsonConvert.DeserializeObject<T>(content);
         }
     }
 }

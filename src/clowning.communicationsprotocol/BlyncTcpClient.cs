@@ -49,17 +49,17 @@ namespace clowning.communicationsprotocol
 
         private async void ProcessServerAsync(TcpClient tcpClient, CancellationToken token)
         {
-            if (ClientConnectedEvent != null)
-            {
-                ClientConnectedEvent(this, null);
-            }
-
-            Trace.TraceInformation("[Client] Connected to server");
-
             using (tcpClient)
             using (_networkStream = tcpClient.GetStream())
             using (var packetStream = _packetStreamFactory.New())
             {
+                if (ClientConnectedEvent != null)
+                {
+                    ClientConnectedEvent(this, null);
+                }
+
+                Trace.TraceInformation("[Client] Connected to server");
+
                 var buffer = new byte[4096];
 
                 while (!token.IsCancellationRequested)

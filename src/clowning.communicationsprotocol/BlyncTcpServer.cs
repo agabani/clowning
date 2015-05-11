@@ -85,48 +85,55 @@ namespace clowning.communicationsprotocol
 
             Trace.TraceInformation("[Server] New client ({0}) connected", clientIndex);
 
-            using (tcpClient)
-            using (var networkStream = tcpClient.GetStream())
-            using (var packetStream = _packetStreamFactory.New())
+            try
             {
-                var buffer = new byte[4096];
-
-                while (!cancellationToken.IsCancellationRequested)
+                using (tcpClient)
+                using (var networkStream = tcpClient.GetStream())
+                using (var packetStream = _packetStreamFactory.New())
                 {
-                    var timeoutTask = Task.Delay(TimeSpan.FromMilliseconds(_connectionTimeoutPeriod),
-                        cancellationToken);
-                    var bytesTask = networkStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
-                    var completedTask = await Task.WhenAny(timeoutTask, bytesTask).ConfigureAwait(false);
+                    var buffer = new byte[4096];
 
-                    if (completedTask == timeoutTask)
+                    while (!cancellationToken.IsCancellationRequested)
                     {
-                        var message = Encoding.UTF8.GetBytes("Client timed out");
-                        await networkStream.WriteAsync(message, 0, message.Length, cancellationToken);
-                    }
+                        var timeoutTask = Task.Delay(TimeSpan.FromMilliseconds(_connectionTimeoutPeriod),
+                            cancellationToken);
+                        var bytesTask = networkStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                        var completedTask = await Task.WhenAny(timeoutTask, bytesTask).ConfigureAwait(false);
 
-                    var bytes = bytesTask.Result;
-                    if (bytes == 0)
-                    {
-                        break;
-                    }
+                        if (completedTask == timeoutTask)
+                        {
+                            var message = Encoding.UTF8.GetBytes("Client timed out");
+                            await networkStream.WriteAsync(message, 0, message.Length, cancellationToken);
+                        }
 
-                    if (MessageReceivedEvent == null)
-                    {
-                        continue;
-                    }
+                        var bytes = bytesTask.Result;
+                        if (bytes == 0)
+                        {
+                            break;
+                        }
 
-                    var results = packetStream.ParseBytes(buffer.Take(bytes).ToArray());
+                        if (MessageReceivedEvent == null)
+                        {
+                            continue;
+                        }
 
-                    if (results == null)
-                    {
-                        continue;
-                    }
+                        var results = packetStream.ParseBytes(buffer.Take(bytes).ToArray());
 
-                    foreach (var result in results)
-                    {
-                        MessageReceivedEvent(clientContext, result);
+                        if (results == null)
+                        {
+                            continue;
+                        }
+
+                        foreach (var result in results)
+                        {
+                            MessageReceivedEvent(clientContext, result);
+                        }
                     }
                 }
+            }
+            catch (Exception exception)
+            {
+                Trace.TraceWarning("[Server] Client ({0}) threw exception: {1}", clientIndex, exception.Message);
             }
 
             if (ClientDisconnectedEvent != null)
