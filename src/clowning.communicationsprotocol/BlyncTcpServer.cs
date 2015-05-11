@@ -78,19 +78,19 @@ namespace clowning.communicationsprotocol
         {
             var clientContext = new TcpClientContext(clientIndex, tcpClient);
 
-            if (ClientConnectedEvent != null)
-            {
-                ClientConnectedEvent(clientContext, EventArgs.Empty);
-            }
-
-            Trace.TraceInformation("[Server] New client ({0}) connected", clientIndex);
-
             try
             {
                 using (tcpClient)
                 using (var networkStream = tcpClient.GetStream())
                 using (var packetStream = _packetStreamFactory.New())
                 {
+                    if (ClientConnectedEvent != null)
+                    {
+                        ClientConnectedEvent(clientContext, EventArgs.Empty);
+                    }
+
+                    Trace.TraceInformation("[Server] New client ({0}) connected", clientIndex);
+
                     var buffer = new byte[4096];
 
                     while (!cancellationToken.IsCancellationRequested)

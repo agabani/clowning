@@ -2,6 +2,7 @@
 using System.Threading;
 using clowning.communicationsprotocol;
 using clowning.communicationsprotocol.Json;
+using clowning.communicationsprotocol.Json.Packets;
 using clowning.communicationsprotocol.Json.Stream;
 using clowning.communicationsprotocol.Models;
 
@@ -14,6 +15,8 @@ namespace clowning.master
             var port = Int32.Parse(args[0]);
 
             Console.WriteLine("Listening to port {0}", port);
+
+            var protocol = new JsonProtocol();
 
             var server = new BlyncTcpServer(new TcpServerSettings
             {
@@ -28,6 +31,22 @@ namespace clowning.master
                 if (client != null)
                 {
                     Console.WriteLine("Client connected [{0}]", client.Id);
+
+                    var redPacket = protocol.SetPacketContents(1, protocol.Serialize(new JsonInstructionPacket {Color = "red"}));
+                    var greenPacket = protocol.SetPacketContents(1, protocol.Serialize(new JsonInstructionPacket { Color = "green" }));
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        if (i%2 == 0)
+                        {
+                            client.Send(redPacket, new CancellationToken()).Wait();
+                        }
+                        else
+                        {
+                            client.Send(greenPacket, new CancellationToken()).Wait();
+                        }
+                        Thread.Sleep(2000);
+                    }
                 }
             };
 
@@ -40,7 +59,6 @@ namespace clowning.master
                 }
             };
 
-            var protocol = new JsonProtocol();
 
             server.MessageReceivedEvent += (sender, bytes) =>
             {

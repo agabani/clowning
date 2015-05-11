@@ -65,15 +65,53 @@ namespace clowning.slave
                 client.Send(packet, new CancellationToken()).Wait();
             };
 
+            bool keepAlive = true;
+
             client.ClientDisconnectedEvent += (sender, eventArgs) =>
             {
                 Console.WriteLine("Disconnected");
+                keepAlive = false;
+            };
+
+            client.MessageReceivedEvent += (sender, bytes) =>
+            {
+                Console.WriteLine("Message recieved");
+
+                var protocol = new JsonProtocol();
+
+                var type = protocol.GetPacketType(bytes);
+                var length = protocol.GetPacketLength(bytes);
+                var content = protocol.GetPacketContents(bytes, length);
+
+                if (type == 1)
+                {
+                    var instruction = protocol.Deserialize<JsonInstructionPacket>(content);
+
+                    if (!string.IsNullOrWhiteSpace(instruction.Color))
+                    {
+                        switch (instruction.Color.ToLower())
+                        {
+                            case "red":
+                                blync.SetColor(0, BlyncClient.Color.Red);
+                                break;
+                            case "green":
+                                blync.SetColor(0, BlyncClient.Color.Green);
+                                break;
+                            default:
+                                blync.ResetLight(0);
+                                break;
+                        }
+                    }
+                }
             };
 
             try
             {
                 client.Start();
-                Thread.Sleep(4000);
+                while (keepAlive)
+                {
+                    Thread.Sleep(100);
+                }
             }
             catch (Exception exception)
             {
