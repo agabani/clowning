@@ -10,7 +10,7 @@ namespace clowning.communicationsprotocol.Json.Packets
         public int? DeviceId { get; set; }
 
         [JsonProperty(PropertyName = "deviceIds", NullValueHandling = NullValueHandling.Ignore)]
-        public ICollection<int> DeviceIds { get; set; }
+        public IEnumerable<int> DeviceIds { get; set; }
 
         [JsonProperty(PropertyName = "flash", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Flash { get; set; }
